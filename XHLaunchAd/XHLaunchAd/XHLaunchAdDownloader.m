@@ -56,8 +56,41 @@
 - (void)URLSession:(NSURLSession *)session
       downloadTask:(NSURLSessionDownloadTask *)downloadTask
 didFinishDownloadingToURL:(NSURL *)location {
+    NSURLResponse *response = downloadTask.response;
+    if ([response isMemberOfClass:[NSHTTPURLResponse class]]) {
+        NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+        if (statusCode != 200) {
+            NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:statusCode userInfo:@{NSLocalizedDescriptionKey:@"status code error"}];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (self.completedBlock) {
+                    self.completedBlock(nil,nil, error);
+                }
+                self.completedBlock = nil;
+            });
+            //销毁
+            [self.session invalidateAndCancel];
+            self.session = nil;
+            return;
+        }
+    }
+
     NSData *data = [NSData dataWithContentsOfURL:location];
     UIImage *image = [UIImage imageWithData:data];
+
+    if (image == nil) {
+        NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:880 userInfo:@{NSLocalizedDescriptionKey:@"image data error"}];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.completedBlock) {
+                self.completedBlock(nil,nil, error);
+            }
+            self.completedBlock = nil;
+        });
+        //销毁
+        [self.session invalidateAndCancel];
+        self.session = nil;
+        return;
+    }
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.completedBlock) {
             self.completedBlock(image,data, nil);
@@ -69,6 +102,7 @@ didFinishDownloadingToURL:(NSURL *)location {
             [self.delegate downloadFinishWithURL:self.url];
         }
     });
+
     //销毁
     [self.session invalidateAndCancel];
     self.session = nil;
@@ -135,6 +169,24 @@ didFinishDownloadingToURL:(NSURL *)location {
 - (void)URLSession:(NSURLSession *)session
       downloadTask:(NSURLSessionDownloadTask *)downloadTask
 didFinishDownloadingToURL:(NSURL *)location {
+    NSURLResponse *response = downloadTask.response;
+    if ([response isMemberOfClass:[NSHTTPURLResponse class]]) {
+        NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+        if (statusCode != 200) {
+            NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:statusCode userInfo:@{NSLocalizedDescriptionKey:@"status code error"}];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (self.completedBlock) {
+                    self.completedBlock(nil, error);
+                }
+                self.completedBlock = nil;
+            });
+            //销毁
+            [self.session invalidateAndCancel];
+            self.session = nil;
+            return;
+        }
+    }
+
     NSError *error=nil;
     NSURL *toURL = [NSURL fileURLWithPath:[XHLaunchAdCache videoPathWithURL:self.url]];
     [[NSFileManager defaultManager] copyItemAtURL:location toURL:toURL error:&error];
@@ -225,7 +277,7 @@ didFinishDownloadingToURL:(NSURL *)location {
          return;
     }
     [self downloadImageWithURL:url progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error) {
-        if(error){
+        if(error || !image){
             if(completedBlock) completedBlock(NO);
         }else{
             [XHLaunchAdCache async_saveImageData:data imageURL:url completed:^(BOOL result, NSURL * _Nonnull URL) {
