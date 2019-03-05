@@ -184,13 +184,11 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
     switch (_launchAdType) {
         case XHLaunchAdTypeImage:{
             if(!_imageAdConfiguration.showEnterForeground || _detailPageShowing) return;
-            [self setupLaunchAd];
             [self setupImageAdForConfiguration:_imageAdConfiguration];
         }
             break;
         case XHLaunchAdTypeVideo:{
             if(!_videoAdConfiguration.showEnterForeground || _detailPageShowing) return;
-            [self setupLaunchAd];
             [self setupVideoAdForConfiguration:_videoAdConfiguration];
         }
             break;
@@ -214,7 +212,7 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 
 /**图片*/
 -(void)setupImageAdForConfiguration:(XHLaunchImageAdConfiguration *)configuration{
-    if(_window == nil) return;
+    if(_window == nil) { [self setupLaunchAd]; }
     [self removeSubViewsExceptLaunchAdImageView];
     XHLaunchAdImageView *adImageView = [[XHLaunchAdImageView alloc] init];
     [_window addSubview:adImageView];
@@ -312,7 +310,7 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 
 /**视频*/
 -(void)setupVideoAdForConfiguration:(XHLaunchVideoAdConfiguration *)configuration{
-    if(_window ==nil) return;
+    if(_window ==nil) { [self setupLaunchAd]; };
     [self removeSubViewsExceptLaunchAdImageView];
     if(!_adVideoView){
         _adVideoView = [[XHLaunchAdVideoView alloc] init];
@@ -403,8 +401,9 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 
 #pragma mark - add subViews
 -(void)addSubViews:(NSArray *)subViews{
+    XHWeakSelf
     [subViews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger idx, BOOL *stop) {
-        [_window addSubview:view];
+        [weakSelf.window addSubview:view];
     }];
 }
 
@@ -481,11 +480,12 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
     __block NSInteger duration = defaultWaitDataDuration;
     if(_waitDataDuration) duration = _waitDataDuration;
     _waitDataTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
+    XHWeakSelf
     NSTimeInterval period = 1.0;
     dispatch_source_set_timer(_waitDataTimer, dispatch_walltime(NULL, 0), period * NSEC_PER_SEC, 0);
     dispatch_source_set_event_handler(_waitDataTimer, ^{
         if(duration==0){
-            DISPATCH_SOURCE_CANCEL_SAFE(_waitDataTimer);
+            DISPATCH_SOURCE_CANCEL_SAFE(weakSelf.waitDataTimer);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[NSNotificationCenter defaultCenter] postNotificationName:XHLaunchAdWaitDataDurationArriveNotification object:nil];
                 [self remove];
@@ -506,6 +506,7 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
     if(configuration.skipButtonType == SkipTypeRoundProgressTime || configuration.skipButtonType == SkipTypeRoundProgressText){
         [_skipButton startRoundDispathTimerWithDuration:duration];
     }
+    XHWeakSelf
     NSTimeInterval period = 1.0;
     _skipTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
     dispatch_source_set_timer(_skipTimer, dispatch_walltime(NULL, 0), period * NSEC_PER_SEC, 0);
@@ -515,10 +516,10 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
                 [self.delegate xhLaunchAd:self customSkipView:configuration.customSkipView duration:duration];
             }
             if(!configuration.customSkipView){
-                [_skipButton setTitleWithSkipType:configuration.skipButtonType duration:duration];
+                [weakSelf.skipButton setTitleWithSkipType:configuration.skipButtonType duration:duration];
             }
             if(duration==0){
-                DISPATCH_SOURCE_CANCEL_SAFE(_skipTimer);
+                DISPATCH_SOURCE_CANCEL_SAFE(weakSelf.skipTimer);
                 [self removeAndAnimate]; return ;
             }
             duration--;
@@ -528,7 +529,7 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 }
 
 -(void)removeAndAnimate{
-    
+    XHWeakSelf
     XHLaunchAdConfiguration * configuration = [self commonConfiguration];
     CGFloat duration = showFinishAnimateTimeDefault;
     if(configuration.showFinishAnimateTime>0) duration = configuration.showFinishAnimateTime;
@@ -543,8 +544,8 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
             break;
         case ShowFinishAnimateLite:{
             [UIView transitionWithView:_window duration:duration options:UIViewAnimationOptionCurveEaseOut animations:^{
-                _window.transform = CGAffineTransformMakeScale(1.5, 1.5);
-                _window.alpha = 0;
+                weakSelf.window.transform = CGAffineTransformMakeScale(1.5, 1.5);
+                weakSelf.window.alpha = 0;
             } completion:^(BOOL finished) {
                 [self remove];
             }];
@@ -552,7 +553,7 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
             break;
         case ShowFinishAnimateFlipFromLeft:{
             [UIView transitionWithView:_window duration:duration options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
-                _window.alpha = 0;
+                weakSelf.window.alpha = 0;
             } completion:^(BOOL finished) {
                 [self remove];
             }];
@@ -560,7 +561,7 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
             break;
         case ShowFinishAnimateFlipFromBottom:{
             [UIView transitionWithView:_window duration:duration options:UIViewAnimationOptionTransitionFlipFromBottom animations:^{
-                _window.alpha = 0;
+                weakSelf.window.alpha = 0;
             } completion:^(BOOL finished) {
                 [self remove];
             }];
@@ -568,7 +569,7 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
             break;
         case ShowFinishAnimateCurlUp:{
             [UIView transitionWithView:_window duration:duration options:UIViewAnimationOptionTransitionCurlUp animations:^{
-                _window.alpha = 0;
+                weakSelf.window.alpha = 0;
             } completion:^(BOOL finished) {
                 [self remove];
             }];
@@ -582,11 +583,12 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 }
 
 -(void)removeAndAnimateDefault{
+    XHWeakSelf
     XHLaunchAdConfiguration * configuration = [self commonConfiguration];
     CGFloat duration = showFinishAnimateTimeDefault;
     if(configuration.showFinishAnimateTime>0) duration = configuration.showFinishAnimateTime;
     [UIView transitionWithView:_window duration:duration options:UIViewAnimationOptionTransitionNone animations:^{
-        _window.alpha = 0;
+        weakSelf.window.alpha = 0;
     } completion:^(BOOL finished) {
         [self remove];
     }];
