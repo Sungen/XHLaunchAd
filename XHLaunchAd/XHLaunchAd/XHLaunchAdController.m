@@ -25,4 +25,8 @@
     return XHLaunchAdPrefersHomeIndicatorAutoHidden;
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 @end
