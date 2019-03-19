@@ -431,6 +431,9 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 #pragma mark - Action
 -(void)skipButtonClick{
     [self removeAndAnimated:YES];
+    if ([self.delegate respondsToSelector:@selector(xhLaunchAdDidSkipClicked:)]) {
+        [self.delegate xhLaunchAdDidSkipClicked:self];
+    }
 }
 
 -(void)removeAndAnimated:(BOOL)animated{
