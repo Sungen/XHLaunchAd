@@ -39,6 +39,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)xhLaunchAd:(XHLaunchAd *)launchAd clickAndOpenModel:(id)openModel clickPoint:(CGPoint)clickPoint;
 
+
+/**
+ 广告跳过点击回调
+
+ @param launchAd launchAd
+ */
+- (void)xhLaunchAdDidSkipClicked:(XHLaunchAd *)launchAd;
+
 /**
  *  图片本地读取/或下载完成回调
  *
