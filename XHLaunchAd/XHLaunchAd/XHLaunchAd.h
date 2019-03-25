@@ -36,8 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
  @param launchAd launchAd
  @param openModel 打开页面参数(此参数即你配置广告数据设置的configuration.openModel)
  @param clickPoint 点击位置
+ @return YES 关闭页面 NO 不关闭页面
  */
-- (void)xhLaunchAd:(XHLaunchAd *)launchAd clickAndOpenModel:(id)openModel clickPoint:(CGPoint)clickPoint;
+- (BOOL)xhLaunchAd:(XHLaunchAd *)launchAd clickAndOpenModel:(id)openModel clickPoint:(CGPoint)clickPoint;
 
 
 /**
@@ -97,13 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
  @param url               图片url
  */
 -(void)xhLaunchAd:(XHLaunchAd *)launchAd launchAdImageView:(UIImageView *)launchAdImageView URL:(NSURL *)url;
-
-
-#pragma mark - 过期-XHLaunchAdDelegate
-- (void)xhLaunchAd:(XHLaunchAd *)launchAd clickAndOpenURLString:(NSString *)openURLString XHLaunchAdDeprecated("请使用xhLaunchAd:clickAndOpenModel:clickPoint:");
-- (void)xhLaunchAd:(XHLaunchAd *)launchAd clickAndOpenURLString:(NSString *)openURLString clickPoint:(CGPoint)clickPoint XHLaunchAdDeprecated("请使用xhLaunchAd:clickAndOpenModel:clickPoint:");
--(void)xhLaunchAd:(XHLaunchAd *)launchAd imageDownLoadFinish:(UIImage *)image XHLaunchAdDeprecated("请使用xhLaunchAd:imageDownLoadFinish:imageData:");
--(void)xhLaunchShowFinish:(XHLaunchAd *)launchAd XHLaunchAdDeprecated("请使用xhLaunchAdShowFinish:");
 
 @end
 

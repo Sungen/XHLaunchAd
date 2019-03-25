@@ -56,9 +56,6 @@ typedef NS_ENUM(NSInteger , ShowFinishAnimate) {
 /** 程序从后台恢复时,是否需要展示广告(defailt NO) */
 @property (nonatomic,assign) BOOL showEnterForeground;
 
-/** 点击打开页面地址(请使用openModel,点击事件代理方法请对应使用xhLaunchAd:clickAndOpenModel:clickPoint:) */
-@property(nonatomic,copy)NSString *openURLString XHLaunchAdDeprecated("请使用openModel,点击事件代理方法请对应使用xhLaunchAd:clickAndOpenModel:clickPoint:");
-
 /** 点击打开页面参数 */
 @property (nonatomic, strong) id openModel;
 
@@ -94,9 +91,6 @@ typedef NS_ENUM(NSInteger , ShowFinishAnimate) {
 
 /** video本地名或网络链接URL string */
 @property(nonatomic,copy)NSString *videoNameOrURLString;
-
-/** 视频缩放模式(default MPMovieScalingModeAspectFill) */
-@property(nonatomic,assign)MPMovieScalingMode scalingMode XHLaunchAdDeprecated("请使用videoGravity");
 
 /** 视频缩放模式(default AVLayerVideoGravityResizeAspectFill) */
 @property (nonatomic, copy) AVLayerVideoGravity videoGravity;

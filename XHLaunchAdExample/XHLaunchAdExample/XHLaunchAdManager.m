@@ -460,12 +460,12 @@
 /**
  广告点击事件回调
  */
--(void)xhLaunchAd:(XHLaunchAd *)launchAd clickAndOpenModel:(id)openModel clickPoint:(CGPoint)clickPoint{
+-(BOOL)xhLaunchAd:(XHLaunchAd *)launchAd clickAndOpenModel:(id)openModel clickPoint:(CGPoint)clickPoint{
 
     NSLog(@"广告点击事件");
 
     /** openModel即配置广告数据设置的点击广告时打开页面参数(configuration.openModel) */
-     if(openModel==nil) return;
+     if(openModel==nil) return NO;
 
     WebViewController *VC = [[WebViewController alloc] init];
     NSString *urlString = (NSString *)openModel;
@@ -474,6 +474,7 @@
     UIViewController* rootVC = [[UIApplication sharedApplication].delegate window].rootViewController;
     [rootVC.myNavigationController pushViewController:VC animated:YES];
 
+    return YES;
 }
 
 /**

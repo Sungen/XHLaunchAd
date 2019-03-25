@@ -234,12 +234,6 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
                 
             } completed:^(UIImage *image,NSData *imageData,NSError *error,NSURL *url){
                 if(!error){
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored"-Wdeprecated-declarations"
-                    if ([weakSelf.delegate respondsToSelector:@selector(xhLaunchAd:imageDownLoadFinish:)]) {
-                        [weakSelf.delegate xhLaunchAd:self imageDownLoadFinish:image];
-                    }
-#pragma clang diagnostic pop
                     if ([weakSelf.delegate respondsToSelector:@selector(xhLaunchAd:imageDownLoadFinish:imageData:)]) {
                         [weakSelf.delegate xhLaunchAd:self imageDownLoadFinish:image imageData:imageData];
                     }
@@ -271,12 +265,6 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
                 adImageView.animatedImage = nil;
                 adImageView.image = [UIImage imageWithData:data];
             }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored"-Wdeprecated-declarations"
-            if ([self.delegate respondsToSelector:@selector(xhLaunchAd:imageDownLoadFinish:)]) {
-                [self.delegate xhLaunchAd:self imageDownLoadFinish:[UIImage imageWithData:data]];
-            }
-#pragma clang diagnostic pop
         }else{
             XHLaunchAdLog(@"未设置广告图片");
         }
@@ -318,10 +306,6 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
     [_window addSubview:_adVideoView];
     /** frame */
     if(configuration.frame.size.width>0&&configuration.frame.size.height>0) _adVideoView.frame = configuration.frame;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored"-Wdeprecated-declarations"
-    if(configuration.scalingMode) _adVideoView.videoScalingMode = configuration.scalingMode;
-#pragma clang diagnostic pop
     if(configuration.videoGravity) _adVideoView.videoGravity = configuration.videoGravity;
     _adVideoView.videoCycleOnce = configuration.videoCycleOnce;
     if(configuration.videoCycleOnce){
@@ -447,19 +431,11 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 -(void)clickAndPoint:(CGPoint)point{
     self.clickPoint = point;
     XHLaunchAdConfiguration * configuration = [self commonConfiguration];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored"-Wdeprecated-declarations"
-    if ([self.delegate respondsToSelector:@selector(xhLaunchAd:clickAndOpenURLString:)]) {
-        [self.delegate xhLaunchAd:self clickAndOpenURLString:configuration.openURLString];
-        [self removeAndAnimateDefault];
-    }
-    if ([self.delegate respondsToSelector:@selector(xhLaunchAd:clickAndOpenURLString:clickPoint:)]) {
-        [self.delegate xhLaunchAd:self clickAndOpenURLString:configuration.openURLString clickPoint:point];
-        [self removeAndAnimateDefault];
-    }
-#pragma clang diagnostic pop
     if ([self.delegate respondsToSelector:@selector(xhLaunchAd:clickAndOpenModel:clickPoint:)]) {
-        [self.delegate xhLaunchAd:self clickAndOpenModel:configuration.openModel clickPoint:point];
+        if ([self.delegate xhLaunchAd:self clickAndOpenModel:configuration.openModel clickPoint:point]) {
+            [self removeAndAnimateDefault];
+        }
+    } else {
         [self removeAndAnimateDefault];
     }
 }
@@ -617,12 +593,6 @@ static  SourceType _sourceType = SourceTypeLaunchImage;
 
 -(void)remove{
     [self removeOnly];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored"-Wdeprecated-declarations"
-    if ([self.delegate respondsToSelector:@selector(xhLaunchShowFinish:)]) {
-        [self.delegate xhLaunchShowFinish:self];
-    }
-#pragma clang diagnostic pop
     if ([self.delegate respondsToSelector:@selector(xhLaunchAdShowFinish:)]) {
         [self.delegate xhLaunchAdShowFinish:self];
     }
