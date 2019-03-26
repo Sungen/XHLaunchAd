@@ -52,6 +52,11 @@ typedef void(^SaveCompletionBlock)(BOOL result , NSURL * URL);
 +(void)async_saveImageData:(NSData *)data imageURL:(NSURL *)url completed:(nullable SaveCompletionBlock)completedBlock;
 
 /**
+ *  生成视频路径 for url
+ */
++(NSString *)imagePathWithURL:(NSURL *)url;
+
+/**
  *  检查是否已缓存在该图片
  *
  *  @param url image url
